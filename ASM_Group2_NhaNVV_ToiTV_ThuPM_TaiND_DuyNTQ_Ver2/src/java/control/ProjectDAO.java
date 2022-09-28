@@ -105,9 +105,15 @@ public class ProjectDAO {
 
     public List<BookDetail> searchByName(String txtName) {
         List<BookDetail> list = new ArrayList<>();
-        String query = "select id_book, img,book_name,author_name,[language],[type],publisher_name,publishing_year,amount "
-                + "from book b, author a, publisher p\n"
-                + "where a.ID_author = b.ID_author and p.ID_publisher = b.ID_publisher and book_name like ?";
+        String query = "select b.ID_book, img, book_name, a.author_name, b.language, b.type, p.publisher_name, b.amount\n"
+                + "from Book b\n"
+                + "inner join Borrow_Orders bo\n"
+                + "on b.ID_Book = b.ID_Book\n"
+                + "inner join author a\n"
+                + "on b.ID_author=a.ID_author\n"
+                + "inner join Publisher p\n"
+                + "on p.ID_publisher = b.ID_publisher\n"
+                + "where b.book_name like ?";
         try {
             conn = new DBContext().getConnection();
             ps = conn.prepareStatement(query);
@@ -122,8 +128,8 @@ public class ProjectDAO {
                         rs.getString(5),
                         rs.getString(6),
                         rs.getString(7),
-                        rs.getInt(8))
-                );
+                        rs.getInt(8)
+                ));
             }
         } catch (Exception e) {
             System.err.println(e);
